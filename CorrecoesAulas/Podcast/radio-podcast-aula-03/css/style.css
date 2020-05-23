@@ -1,0 +1,10 @@
+.inputFrequency {
+  width: 150px !important;
+  border: 1px solid lightgray !important;
+  text-align: center;
+}
+
+img {
+  width: 200px;
+  height: 200px;
+}

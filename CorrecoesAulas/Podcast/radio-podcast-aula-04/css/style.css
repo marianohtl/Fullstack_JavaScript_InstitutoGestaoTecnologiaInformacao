@@ -1,0 +1,12 @@
+#inputFrequency {
+  width: 250px;
+  text-align: center;
+
+  border: 1px solid lightgray;
+  border-radius: 5px;
+}
+
+img {
+  width: 200px;
+  height: 200px;
+}
