@@ -1,0 +1,11 @@
+npm init
+
+first dependence > express:
+npm install express
+
+nodemon (ou node) index.js 
+
+
+
+intalação global nodemon - ferramenta para restart da aplicação conforme mudanças
+(npm install -g nodemon) 
