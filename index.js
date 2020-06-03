@@ -15,19 +15,66 @@ app.use(express.json());
 
 // req res e a lambda representam a nossa callback, que é a função que será executada quando chega no nosso endereço
 app.post('/account', (req, res) => {
-  let param = req.body; //pegando parametros
+  let account = req.body; //pegando parametros
+  //leitura do método/  
+  fs.readFile('accounts.json', 'utf8', (err, data) => {
+    //verificando se não deu erro para a leitura do arquivo
+    if (!err) {
+      try {
+
+        let json = JSON.parse(data);
+        console.log(json);
+        account = { id: json.nextId++, ...account };
+
+        json.accounts.push(account);
+        //reescevendo o arquivo
+        fs.writeFile('accounts.json', JSON.stringify(json), err => {
+          if (err) {
+            console.log(err);
+          } else {
+            res.send("post-account");
+          }
+        });
+      } catch (err) {
+        res.status(400).res({ error: err.message });
+      }
+    } else {
+      console.log("erro de leitura");
+      res.send("erro de leitura");
+    }
+  });
+
+
+
   //método write file cria um file json com a request, e sempre o substitui com um novo
   //fs.writeFile
   //o append file, concatena as requests json  
   //fs.appendFile
-  fs.appendFile('accounts.json', JSON.stringify(param), err => {
-    console.log(err);
-  })//nome do arquivo e json
-  //devemos sempre encerrar a request para não ficar uma request eterna
-  res.send('response API post account');
+  // fs.appendFile('accounts.json', JSON.stringify(param), err => {
+  //   console.log(err);
+  // })
+  //nome do arquivo e json
 });
 
 //iniciar api
-app.listen(3000, () => {
-  console.log('api started')
-})
+app.listen(3000, function () {
+  try {
+    fs.readFile('accounts.json', 'utf8', (err, data) => {
+      //verificando se arquivo existe, se não existe cria arquivo
+      if (err) {
+        const initialJson = {
+          nextId: 1,
+          accounts: []
+        };
+        fs.writeFile('accounts.json', JSON.stringify(initialJson), err => {
+          if (err) {
+            console.log(err);
+          }
+        });
+      }
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  console.log('api started');
+});
