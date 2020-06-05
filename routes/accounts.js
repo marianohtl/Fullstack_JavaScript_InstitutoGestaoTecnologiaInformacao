@@ -78,5 +78,30 @@ router.get("/:id", (req, res) => {
   });
 });
 
+router.delete("/:id", (req, res) => {
+  fs.readFile(global.fileName, "utf8", (err, data) => {
+    try {
+      if (err) throw err;
+
+      let json = JSON.parse(data);
+      //retirando da lista de arrays o id == id request
+      let accounts = json.accounts.filter(account => account.id !== parseInt(req.params.id, 10));
+      //colocando o novo array em json.accounts
+      json.accounts = accounts;
+
+      //escrevendo no file
+      fs.writeFile(global.fileName, JSON.stringify(json), err => {
+        if (err) {
+          res.status(400).send({ error: err.message });
+        } else {
+          res.end();
+        }
+      });
+    } catch (err) {
+      res.status(400).send({ error: err.message });
+    }
+  });
+});
+
 //exportando o módulo
 module.exports = router;
