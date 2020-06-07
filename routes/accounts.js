@@ -103,5 +103,65 @@ router.delete("/:id", (req, res) => {
   });
 });
 
+router.put("/", (req, res) => {
+  let newAccount = req.body;
+  fs.readFile(global.fileName, "utf8", (err, data) => {
+    try {
+      if (err) throw err;
+      let json = JSON.parse(data);
+
+      let oldIndex = json.accounts.findIndex(account => account.id === newAccount.id);
+
+      //aqui eu pego o array, indico o índice que foi detectado acima e o substituo pelos valores de newAccount
+      json.accounts[oldIndex].name = newAccount.name;
+      json.accounts[oldIndex].balance = newAccount.balance;
+
+      fs.writeFile(global.fileName, JSON.stringify(json), err => {
+        if (err) {
+          json.accounts[oldIndex].name = newAccount.name;
+          res.status(400).send({ error: err.message });
+        } else {
+          res.end();
+        }
+      });
+
+    } catch (err) {
+      res.status(400).send({ error: err.message });
+    }
+  });
+});
+
+router.post("/transaction", (req, res) => {
+  let params = req.body;
+  fs.readFile(global.fileName, "utf8", (err, data) => {
+    try {
+
+      if (err) throw err;
+
+      let json = JSON.parse(data);
+      let index = json.accounts.findIndex(account => account.id === params.id);
+
+
+      if ((params.value < 0) && ((json.accounts[index].balance + params.value) < 0)) {
+        throw new Error("Não há suficiente.");
+      }
+
+      //aqui eu pego o array, indico o índice que foi detectado acima e o substituo pelos valores de newAccount
+      json.accounts[index].balance += params.value;
+
+      fs.writeFile(global.fileName, JSON.stringify(json), err => {
+        if (err) {
+          res.status(400).send({ error: err.message });
+        } else {
+          res.send(json.accounts[index]);
+        }
+      });
+    } catch (err) {
+      res.status(400).send({ error: err.message });
+    }
+  });
+});
+
+
 //exportando o módulo
 module.exports = router;
